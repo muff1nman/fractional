@@ -217,3 +217,42 @@ describe "Fractional", "mixed_fraction?" do
     Fractional.mixed_fraction?("3/4").should be_false
   end
 end
+
+describe "Frational", "fractional_from_parts" do
+  it "should return rational values for various decimals" do
+    Fractional.fractional_from_parts("","","3").should eq(Rational(1,3))
+    Fractional.fractional_from_parts("","","7").should eq(Rational(7,9))
+    Fractional.fractional_from_parts("","","9").should eq(Rational(1,1))
+    Fractional.fractional_from_parts("5","8","144").should eq(Rational(3227,555))
+    Fractional.fractional_from_parts("","58","3").should eq(Rational(7,12))
+    Fractional.fractional_from_parts("","","012345679").should eq(Rational(1,81))
+  end
+end
+
+describe "Fractional", "find_repeat" do
+  it "should return the repeating decimals in a string" do
+    Fractional.find_repeat("1.0333").should eq("3")
+    Fractional.find_repeat("0.333").should eq("3")
+    Fractional.find_repeat("3.142857142857").should eq("142857")
+  end
+
+  it "should return nil when there are not enough repeating decimals" do
+    Fractional.find_repeat("1.03").should be_nil
+  end
+end
+
+describe "Fractional", "find_after_decimal" do
+  it "should return the decimal characters after the decimal but before the repeating characters" do
+    Fractional.find_after_decimal("1.0333").should eq("0")
+    Fraciontal.find_after_decimal("0.3333").should eq("")
+    Fractional.find_after_decimal("0.58333").should eq("58")
+  end
+end
+
+
+describe "Fractional", "find_before_decimal" do
+  it "should return the decimal characters before the decimal" do
+    Fractional.find_before_decimal("1.0333").should eq("1")
+    Fractional.find_before_decimal(".3333").should eq("")
+  end
+end
