@@ -42,6 +42,7 @@ class Fractional
   end
 
   def self.to_s(value, args={})
+    # TODO add repeat option
     whole_number = value.to_f.truncate.to_i
 
     if whole_number == 0 # Single fraction
@@ -115,5 +116,59 @@ class Fractional
     elsif e.zero?
       Rational(s)* Rational(2)**(-1024)*Rational("0#{f}".to_i(2),0x10000000000000)
     end
+  end
+
+  def self.fractional_from_repeat(base_value)
+    normalized_value = base_value.to_f
+    repeat = find_repeat( normalized_value )
+    if !repeat or repeat.length < 1
+      return ""
+    else
+      return fractional_from_parts(
+        find_before_decimal(normalized_value), 
+        find_after_decimal(normalized_value),
+        find_repeat(normalized_value))
+    end
+  end
+
+  def self.find_after_decimal( decimal )
+    s_decimal = decimal.to_s
+    regex = /(#{find_repeat(s_decimal)})+/
+    last = s_decimal.index( regex )
+    first = s_decimal.index( '.' ) + 1
+    s_decimal[first...last]
+  end
+
+  def self.find_before_decimal( decimal )
+    numeric = decimal.to_f.floor.to_i
+    if numeric == 0
+      ""
+    else
+      numeric.to_s
+    end
+  end
+
+  # minimum two repeating to recognize
+  def self.find_repeat( decimal )
+    return largest_repeat( decimal.to_s.reverse, 0 ).reverse
+  end
+
+  def self.largest_repeat( string, i )
+    if i * 2 > string.length
+      return ""
+    end
+    repeat_string = string[0..i]
+    next_best = largest_repeat( string, i + 1)
+    if repeat_string == string[i+1..2*i + 1]
+      repeat_string.length > next_best.length ? repeat_string : next_best
+    else
+      next_best
+    end
+  end
+
+  def self.fractional_from_parts(before_decimal, after_decimal, repeat)
+    numerator = "#{before_decimal}#{after_decimal}#{repeat}".to_i - "#{before_decimal}#{after_decimal}".to_i
+    denominator = 10 ** (after_decimal.length + repeat.length) - 10 ** after_decimal.length
+    return Rational( numerator, denominator )
   end
 end
