@@ -53,7 +53,7 @@ class Fractional
 
       fractional_part = fractional_part_to_string(decimal_point_value.abs, args[:to_nearest])
 
-      if (fractional_part == "1") || (fractional_part == "0")
+      if (Rational(fractional_part) == 1.0) || (Rational(fractional_part) == 0)
         (whole_number + fractional_part.to_i).to_s
       else
         whole_number.to_s + " " + fractional_part
@@ -100,29 +100,26 @@ class Fractional
     end
   end
 
-  # Whoa this method is crazy
-  # I nicked it from Jannis Harder at http://markmail.org/message/nqgrsmaixwbrvsno
   def self.float_to_rational(value)
     if value.nan?
       return Rational(0,0) # Div by zero error
     elsif value.infinite?
       return Rational(value<0 ? -1 : 1,0) # Div by zero error
     end
-    s,e,f = [value].pack("G").unpack("B*").first.unpack("AA11A52")
-    s = (-1)**s.to_i
-    e = e.to_i(2)
-    if e.nonzero? and e<2047
-      Rational(s)* Rational(2)**(e-1023)*Rational("1#{f}".to_i(2),0x10000000000000)
-    elsif e.zero?
-      Rational(s)* Rational(2)**(-1024)*Rational("0#{f}".to_i(2),0x10000000000000)
-    end
+
+    # first try to convert a repeating decimal
+    repeat = float_to_rational_repeat(value)
+    return repeat unless repeat.nil?
+
+    # finally assume a simple decimal 
+    return Rational(value)
   end
 
-  def self.fractional_from_repeat(base_value)
+  def self.float_to_rational_repeat(base_value)
     normalized_value = base_value.to_f
     repeat = find_repeat( normalized_value )
     if !repeat or repeat.length < 1
-      return ""
+      return nil
     else
       return fractional_from_parts(
         find_before_decimal(normalized_value), 
@@ -148,7 +145,6 @@ class Fractional
     end
   end
 
-  # minimum two repeating to recognize
   def self.find_repeat( decimal )
     return largest_repeat( decimal.to_s.reverse, 0 ).reverse
   end
