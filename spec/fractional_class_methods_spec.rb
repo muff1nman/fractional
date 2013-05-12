@@ -268,6 +268,10 @@ describe "Fractional", "float_to_rational_repeat" do
     Fractional.float_to_rational_repeat("3.142857142857").should eq(Rational(22,7))
   end
 
+  it "should be able to deal with a rounding error at the end of a float value" do
+    Fractional.float_to_rational("3.1666666666666665").should eq(Rational(19,6))
+  end
+
   it "should not be able to parse a non repeating decimal" do
     Fractional.float_to_rational_repeat("1.234").should be_nil
     Fractional.float_to_rational_repeat("1.333312").should be_nil
