@@ -257,11 +257,17 @@ describe "Fractional", "find_before_decimal" do
   end
 end
 
-describe "Fractiona", "fractional_from_repeat" do
+describe "Fractional", "fractional_from_repeat" do
   it "should parse a repeating decimal into a fractional value" do
     Fractional.fractional_from_repeat("0.33").should eq(Rational(1,3))
     Fractional.fractional_from_repeat(".33").should eq(Rational(1,3))
     Fractional.fractional_from_repeat("0.8181").should eq(Rational(9,11))
     Fractional.fractional_from_repeat("3.142857142857").should eq(Rational(22,7))
+  end
+
+  it "should not be able to parse a non repeating decimal" do
+    Fractional.fractional_from_repeat("1.234").should be_nil
+    Fractional.fractional_from_repeat("1.333312").should be_nil
+    Fractional.fractional_from_repeat("as2342").should be_nil
   end
 end
