@@ -109,12 +109,6 @@ class Fractional
 
     # first try to convert a repeating decimal
     repeat = float_to_rational_repeat(value)
-    if repeat.nil?
-      # try again chomping off the last number (sometimes rounding will mess
-      # up)
-      repeat = float_to_rational_repeat(value.to_s[0...-1])
-    end
-    
     return repeat unless repeat.nil?
 
     # finally assume a simple decimal 
@@ -124,13 +118,20 @@ class Fractional
   def self.float_to_rational_repeat(base_value)
     normalized_value = base_value.to_f
     repeat = find_repeat( normalized_value )
+
+    if repeat.nil? or repeat.length < 1
+      # try again chomping off the last number (fixes float rounding issues)
+      normalized_value = normalized_value.to_s[0...-1].to_f
+      repeat = find_repeat(normalized_value.to_s)
+    end
+    
     if !repeat or repeat.length < 1
       return nil
     else
       return fractional_from_parts(
         find_before_decimal(normalized_value), 
         find_after_decimal(normalized_value),
-        find_repeat(normalized_value))
+        repeat)
     end
   end
 
