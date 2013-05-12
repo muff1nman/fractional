@@ -6,14 +6,6 @@ describe "Fractional" do
     one_half = Fractional.new("1/2")
   end
 
-  it "should create a fractional object from a string" do
-    one_half = Fractional.new("1/2")
-  end
-
-  it "should create a fractional object from a string" do
-    one_half = Fractional.new("1/2")
-  end
-  
   it "should convert fractional to string" do
     one_half = Fractional.new("1/2")
     one_half.to_s.should == "1/2"
