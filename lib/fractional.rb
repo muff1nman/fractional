@@ -101,14 +101,20 @@ class Fractional
   end
 
   def self.float_to_rational(value)
-    if value.nan?
+    if value.to_f.nan?
       return Rational(0,0) # Div by zero error
-    elsif value.infinite?
+    elsif value.to_f.infinite?
       return Rational(value<0 ? -1 : 1,0) # Div by zero error
     end
 
     # first try to convert a repeating decimal
     repeat = float_to_rational_repeat(value)
+    if repeat.nil?
+      # try again chomping off the last number (sometimes rounding will mess
+      # up)
+      repeat = float_to_rational_repeat(value.to_s[0...-1])
+    end
+    
     return repeat unless repeat.nil?
 
     # finally assume a simple decimal 
