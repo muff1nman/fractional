@@ -91,6 +91,9 @@ describe "Fractional", "to_s" do
     Fractional.to_s(-0.140625, :to_nearest => "1/64").should == "-9/64"
   end
 
+  it "should attempt to convert repeating decimals to nice fractions" do
+    Fractional.to_s(0.66666).should == "2/3"
+  end
 
 end
 
@@ -257,17 +260,17 @@ describe "Fractional", "find_before_decimal" do
   end
 end
 
-describe "Fractional", "fractional_from_repeat" do
+describe "Fractional", "float_to_rational_repeat" do
   it "should parse a repeating decimal into a fractional value" do
-    Fractional.fractional_from_repeat("0.33").should eq(Rational(1,3))
-    Fractional.fractional_from_repeat(".33").should eq(Rational(1,3))
-    Fractional.fractional_from_repeat("0.8181").should eq(Rational(9,11))
-    Fractional.fractional_from_repeat("3.142857142857").should eq(Rational(22,7))
+    Fractional.float_to_rational_repeat("0.33").should eq(Rational(1,3))
+    Fractional.float_to_rational_repeat(".33").should eq(Rational(1,3))
+    Fractional.float_to_rational_repeat("0.8181").should eq(Rational(9,11))
+    Fractional.float_to_rational_repeat("3.142857142857").should eq(Rational(22,7))
   end
 
   it "should not be able to parse a non repeating decimal" do
-    Fractional.fractional_from_repeat("1.234").should be_nil
-    Fractional.fractional_from_repeat("1.333312").should be_nil
-    Fractional.fractional_from_repeat("as2342").should be_nil
+    Fractional.float_to_rational_repeat("1.234").should be_nil
+    Fractional.float_to_rational_repeat("1.333312").should be_nil
+    Fractional.float_to_rational_repeat("as2342").should be_nil
   end
 end
